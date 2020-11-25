@@ -10,6 +10,11 @@
       "StackName": "amplify-pupu-dev-05123",
       "StackId": "arn:aws:cloudformation:us-east-1:362929038404:stack/amplify-pupu-dev-05123/30469820-2f64-11eb-ac15-0a292b885373",
       "AmplifyAppId": "d3gxljhskq0f6a"
+    },
+    "categories": {
+      "auth": {
+        "pupu9509d1cf": {}
+      }
     }
   }
 }

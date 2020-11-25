@@ -1,1 +1,10 @@
-{}
+{
+  "auth": {
+    "pupu9509d1cf": {
+      "service": "Cognito",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [],
+      "customAuth": false
+    }
+  }
+}

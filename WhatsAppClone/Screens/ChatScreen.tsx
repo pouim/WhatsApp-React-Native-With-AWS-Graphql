@@ -29,7 +29,7 @@ export default function ChatsScreen() {
     };
     fetchChatRooms();
   }, []);
-
+  console.log("Chatrooms: " + JSON.stringify(chatRooms));
   return (
     <View style={styles.container}>
       <FlatList

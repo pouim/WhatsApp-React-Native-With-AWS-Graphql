@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   TouchableOpacity,
@@ -13,56 +13,72 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import styles from './styles';
 
 import {API, graphqlOperation, Auth} from 'aws-amplify';
-import { createMessage } from '../../../graphql/mutations';
+import {createMessage, updateChatRoom} from '../../../graphql/mutations';
 
 const InputArea = (props) => {
-  const { chatRoomID } = props;
+  const {chatRoomID} = props;
   const [message, setMessage] = useState('');
   const [myUserId, setMyUserId] = useState(null);
 
   useEffect(() => {
-   const fetchUser = async () => {
-    const userInfo = await Auth.currentAuthenticatedUser();
-    setMyUserId(userInfo.attributes.sub);
-   };
+    const fetchUser = async () => {
+      const userInfo = await Auth.currentAuthenticatedUser();
+      setMyUserId(userInfo.attributes.sub);
+    };
 
-   fetchUser();
-  }, [])
-  
+    fetchUser();
+  }, []);
 
   //methods///
   const onButtonClickHandler = () => {
-     if(!message) {
-         onMicrophonePressHandler();
-     } else {
-         onSendPressHandler();
-     };
+    if (!message) {
+      onMicrophonePressHandler();
+    } else {
+      onSendPressHandler();
+    }
   };
 
   const onMicrophonePressHandler = () => {
-      console.warn("microphone button clicked");
-      //Send To Backend
+    console.warn('microphone button clicked');
+    //Send To Backend
   };
-   
+ const updateChatRoomLastMessage = async (messageId: string) => {
+   try {
+     await API.graphql(
+       graphqlOperation(updateChatRoom, {
+         input: {
+           id: chatRoomID,
+           lastMessageID: messageId,
+         },
+       }),
+     );
+   } catch (e) {
+     console.log(e);
+   }
+ };
 
-   const onSendPressHandler = async () => {
-      try {
-        await API.graphql(
-          graphqlOperation(
-            createMessage, {
-              input: {
-                content: message,
-                userID: myUserId,
-                chatRoomID: chatRoomID
-              }
+ const onSendPressHandler = async () => {
+    try {
+      const newMessageData = await API.graphql(
+        graphqlOperation(
+          createMessage, {
+            input: {
+              content: message,
+              userID: myUserId,
+              chatRoomID
             }
-          )
+          }
         )
-      } catch (e) {
-        console.log(e);
-      }
-      setMessage("");
-  };
+      )
+
+      await updateChatRoomLastMessage(newMessageData.data.createMessage.id)
+      console.log(newMessageData);
+    } catch (e) {
+      console.log(e);
+    }
+
+    setMessage('');
+  }
 
   return (
     <KeyboardAvoidingView>
